@@ -34,11 +34,6 @@ void PBtnToggle::onRelease(ToggleFunc callback) {
     PBtnToggle::onReleaseCallback = callback;
 }
 
-void PBtnToggle::checkChange() {
-    bool btn_pressed = (digitalRead(PBtnToggle::btn) == HIGH) == (bool) bitRead(PBtnToggle::state, 5);
-    PBtnToggle::timer = millis();
-}
-
 void PBtnToggle::triggerEvents(bool btn_pressed) {
     if (btn_pressed) {
         if (!bitRead(PBtnToggle::state, 1)) {

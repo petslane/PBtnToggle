@@ -17,7 +17,6 @@ class PBtnToggle {
         void onPress(ToggleFunc callback);
         void onLongPress(LongPressFunc callback);
         void onRelease(ToggleFunc callback);
-        void checkChange();
         void check();
         int getPin();
     private:
