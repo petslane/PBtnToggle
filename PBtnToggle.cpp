@@ -38,7 +38,7 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
     if (btn_pressed) {
         if (!bitRead(PBtnToggle::state, 1)) {
             if (!bitRead(PBtnToggle::state, 2)) {
-                PBtnToggle::onPressCallback(PBtnToggle::btn, HIGH);
+                PBtnToggle::onPressCallback(PBtnToggle::btn, bitRead(PBtnToggle::state, 5)?HIGH:LOW);
             }
             if (!PBtnToggle::onLongPressCallback) {
                 bitClear(PBtnToggle::state, 0);
@@ -50,7 +50,7 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
             PBtnToggle::timer = millis();
         }
         if (PBtnToggle::onLongPressCallback && !bitRead(PBtnToggle::state, 2) && PBtnToggle::timer + PBTNTOGGLE_LONGCLICK_TIME < millis()) {
-            bool noSkip = PBtnToggle::onLongPressCallback(PBtnToggle::btn, HIGH);
+            bool noSkip = PBtnToggle::onLongPressCallback(PBtnToggle::btn, bitRead(PBtnToggle::state, 5)?HIGH:LOW);
             if (noSkip) {
                 bitClear(PBtnToggle::state, 1);
                 bitSet(PBtnToggle::state, 2);
@@ -60,7 +60,7 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
         }
     } else {
         if (!bitRead(PBtnToggle::state, 3) && !bitRead(PBtnToggle::state, 2)) {
-            PBtnToggle::onReleaseCallback(PBtnToggle::btn, HIGH);
+            PBtnToggle::onReleaseCallback(PBtnToggle::btn, !bitRead(PBtnToggle::state, 5)?HIGH:LOW);
             bitClear(PBtnToggle::state, 0);
 
             bitClear(PBtnToggle::state, 1);
