@@ -22,14 +22,29 @@ PBtnToggle::PBtnToggle(int btn_pin, int pressed_state) {
     PBtnToggle::onReleaseCallback = NULL;
 }
 
+/**
+ * Set callback function for on button press event
+ *
+ * @param callback Callback function pointer
+ */
 void PBtnToggle::onPress(ToggleFunc callback) {
     PBtnToggle::onPressCallback = callback;
 }
 
+/**
+ * Set callback function for on long button press event
+ *
+ * @param callback Callback function pointer
+ */
 void PBtnToggle::onLongPress(LongPressFunc callback) {
     PBtnToggle::onLongPressCallback = callback;
 }
 
+/**
+ * Set callback function for on button release event
+ *
+ * @param callback Callback function pointer
+ */
 void PBtnToggle::onRelease(ToggleFunc callback) {
     PBtnToggle::onReleaseCallback = callback;
 }
@@ -70,6 +85,9 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
     }
 }
 
+/**
+ * Check button state and trigger events if needed
+ */
 void PBtnToggle::check() {
     if (bitRead(PBtnToggle::state, 4)) {
         return;
@@ -86,9 +104,11 @@ void PBtnToggle::check() {
         bitClear(PBtnToggle::state, 6);
     }
 
+    // trigger event if debounce time is passed
     if (!btn_state_changed && PBtnToggle::timer > 0 && PBtnToggle::timer + PBTNTOGGLE_CLICK_DEBOUNCE_TIME < millis() && bitRead(PBtnToggle::state, 0)) {
         PBtnToggle::triggerEvents(btn_pressed);
     }
+    // reset timer if state has changed
     if (btn_state_changed) {
         PBtnToggle::timer = millis();
         bitSet(PBtnToggle::state, 0);
@@ -96,6 +116,9 @@ void PBtnToggle::check() {
     bitClear(PBtnToggle::state, 4);
 }
 
+/**
+ * Get pin number
+ */
 int PBtnToggle::getPin() {
     return this->btn;
 }
