@@ -18,7 +18,6 @@
  */
 PBtnToggle::PBtnToggle(int btn_pin, int pressed_state) {
     PBtnToggle::btn_ = btn_pin;
-    pinMode(PBtnToggle::btn_, INPUT);
     PBtnToggle::state_ = B00000000;
     if (pressed_state==HIGH) {
         bitSet(PBtnToggle::state_, 5);
@@ -26,6 +25,14 @@ PBtnToggle::PBtnToggle(int btn_pin, int pressed_state) {
     PBtnToggle::on_press_callback_ = NULL;
     PBtnToggle::on_long_press_callback_ = NULL;
     PBtnToggle::on_release_callback_ = NULL;
+    PBtnToggle::init_();
+}
+
+/**
+ * Init pin
+ */
+void PBtnToggle::init_() {
+    pinMode(PBtnToggle::btn_, INPUT);
 }
 
 /**
