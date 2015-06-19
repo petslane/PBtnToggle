@@ -1,6 +1,6 @@
 #include "PBtnToggle.h"
 
-// PBtnToggle::state bit values:
+// PBtnToggle::state_ bit values:
 //   0 - pressed, timer started
 //   1 - onPress triggered
 //   2 - onLongPress triggered
@@ -10,6 +10,12 @@
 //   6 - last button state
 //   7 - last event was long press, ignore next release, then press ad clear on press
 
+/**
+ * Create button instance
+ *
+ * @param btn_pin Pin where button is wired
+ * @param pressed_state Pin state when button is pressed. Value LOW or HIGH depends on wiring.
+ */
 PBtnToggle::PBtnToggle(int btn_pin, int pressed_state) {
     PBtnToggle::btn_ = btn_pin;
     pinMode(PBtnToggle::btn_, INPUT);

@@ -1,14 +1,24 @@
 #ifndef PBTNTOGGLE_H
 #define PBTNTOGGLE_H
 
-// the debounce time in ms.
+/**
+ * the debounce time in ms.
+ */
 #define PBTNTOGGLE_CLICK_DEBOUNCE_TIME 100
-// long press time in ms
+/**
+ * long press time in ms
+ */
 #define PBTNTOGGLE_LONGCLICK_TIME 800
 
 #include "Arduino.h"
 
+/**
+ * A type definition for press/release event callback function
+ */
 typedef void (*ToggleFunc)(int btn, int state);
+/**
+ * A type definition for long press event callback function
+ */
 typedef bool (*LongPressFunc)(int btn, int state);
 
 class PBtnToggle {
