@@ -52,7 +52,7 @@ void PBtnToggle::onRelease(ToggleFunc callback) {
 void PBtnToggle::triggerEvents(bool btn_pressed) {
     if (btn_pressed) {
         if (!bitRead(PBtnToggle::state, 1)) {
-            if (!bitRead(PBtnToggle::state, 2)) {
+            if (!bitRead(PBtnToggle::state, 2) && PBtnToggle::onPressCallback) {
                 PBtnToggle::onPressCallback(PBtnToggle::btn, bitRead(PBtnToggle::state, 5)?HIGH:LOW);
             }
             if (!PBtnToggle::onLongPressCallback) {
@@ -75,7 +75,9 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
         }
     } else {
         if (!bitRead(PBtnToggle::state, 3) && !bitRead(PBtnToggle::state, 2)) {
-            PBtnToggle::onReleaseCallback(PBtnToggle::btn, !bitRead(PBtnToggle::state, 5)?HIGH:LOW);
+            if (PBtnToggle::onReleaseCallback) {
+                PBtnToggle::onReleaseCallback(PBtnToggle::btn, !bitRead(PBtnToggle::state, 5)?HIGH:LOW);
+            }
             bitClear(PBtnToggle::state, 0);
 
             bitClear(PBtnToggle::state, 1);
