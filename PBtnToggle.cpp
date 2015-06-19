@@ -88,6 +88,13 @@ void PBtnToggle::triggerEvents(bool btn_pressed) {
 }
 
 /**
+ * Read button state and return true if button is pressed down.
+ */
+bool PBtnToggle::is_btn_pressed_() {
+    return (digitalRead(PBtnToggle::btn_) == HIGH) == (bitRead(PBtnToggle::state_, 5) == 1);
+}
+
+/**
  * Check button state and trigger events if needed
  */
 void PBtnToggle::check() {
@@ -96,7 +103,7 @@ void PBtnToggle::check() {
     }
     bitSet(PBtnToggle::state_, 4);
     // get current button state
-    bool btn_pressed = (digitalRead(PBtnToggle::btn) == HIGH) == (bitRead(PBtnToggle::state, 5) == 1);
+    bool btn_pressed = PBtnToggle::is_btn_pressed_();
     // has state changed during last check
     bool btn_state_changed = (bool) btn_pressed != (bool) bitRead(PBtnToggle::state_, 6);
 
