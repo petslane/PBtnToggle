@@ -20,12 +20,12 @@ class PBtnToggle {
         void check();
         int getPin();
     private:
-        int btn;
-        long timer;
-        byte state;
-        ToggleFunc onPressCallback;
-        LongPressFunc onLongPressCallback;
-        ToggleFunc onReleaseCallback;
+        int btn_;
+        long timer_;
+        byte state_;
+        ToggleFunc on_press_callback_;
+        LongPressFunc on_long_press_callback_;
+        ToggleFunc on_release_callback_;
         void triggerEvents(bool btn_pressed);
 };
 
