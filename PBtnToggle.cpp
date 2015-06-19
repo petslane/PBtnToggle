@@ -55,7 +55,7 @@ void PBtnToggle::onRelease(ToggleFunc callback) {
     PBtnToggle::on_release_callback_ = callback;
 }
 
-void PBtnToggle::triggerEvents(bool btn_pressed) {
+void PBtnToggle::trigger_events_(bool btn_pressed) {
     if (btn_pressed) {
         if (!bitRead(PBtnToggle::state_, 1)) {
             if (!bitRead(PBtnToggle::state_, 2) && PBtnToggle::on_press_callback_) {
@@ -121,7 +121,7 @@ void PBtnToggle::check() {
 
     // trigger event if debounce time is passed
     if (!btn_state_changed && PBtnToggle::timer_ > 0 && PBtnToggle::timer_ + PBTNTOGGLE_CLICK_DEBOUNCE_TIME < millis() && bitRead(PBtnToggle::state_, 0)) {
-        PBtnToggle::triggerEvents(btn_pressed);
+        PBtnToggle::trigger_events_(btn_pressed);
     }
     // reset timer if state has changed
     if (btn_state_changed) {

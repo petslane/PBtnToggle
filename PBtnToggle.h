@@ -36,7 +36,7 @@ class PBtnToggle {
         ToggleFunc on_press_callback_;
         LongPressFunc on_long_press_callback_;
         ToggleFunc on_release_callback_;
-        void triggerEvents(bool btn_pressed);
+        void trigger_events_(bool btn_pressed);
         bool is_btn_pressed_();
 };
 
