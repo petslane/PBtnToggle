@@ -19,9 +19,7 @@
 PBtnToggleBase::PBtnToggleBase(int btn_pin, int pressed_state) {
     PBtnToggleBase::btn_ = btn_pin;
     PBtnToggleBase::state_ = B00000000;
-    if (pressed_state==HIGH) {
-        bitSet(PBtnToggleBase::state_, 5);
-    }
+    state_pressed_on_high_(pressed_state==HIGH);
     PBtnToggleBase::on_press_callback_ = NULL;
     PBtnToggleBase::on_long_press_callback_ = NULL;
     PBtnToggleBase::on_release_callback_ = NULL;
@@ -56,38 +54,38 @@ void PBtnToggleBase::onRelease(ToggleFunc callback) {
 
 void PBtnToggleBase::trigger_events_(bool btn_pressed) {
     if (btn_pressed) {
-        if (!bitRead(PBtnToggleBase::state_, 1)) {
-            if (!bitRead(PBtnToggleBase::state_, 2) && PBtnToggleBase::on_press_callback_) {
-                PBtnToggleBase::on_press_callback_(PBtnToggleBase::btn_, bitRead(PBtnToggleBase::state_, 5)?HIGH:LOW);
+        if (!state_press_triggered_()) {
+            if (!state_longpress_triggered_() && PBtnToggleBase::on_press_callback_) {
+                PBtnToggleBase::on_press_callback_(PBtnToggleBase::btn_, state_pressed_on_high_()?HIGH:LOW);
             }
             if (!PBtnToggleBase::on_long_press_callback_) {
-                bitClear(PBtnToggleBase::state_, 0);
+                state_press_timer_started_(false);
             }
 
-            bitSet(PBtnToggleBase::state_, 1);
-            bitClear(PBtnToggleBase::state_, 2);
-            bitClear(PBtnToggleBase::state_, 3);
+            state_press_triggered_(true);
+            state_longpress_triggered_(false);
+            state_release_triggered_(false);
             PBtnToggleBase::timer_ = millis();
         }
-        if (PBtnToggleBase::on_long_press_callback_ && !bitRead(PBtnToggleBase::state_, 2) && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_LONGCLICK_TIME < millis()) {
-            bool noSkip = PBtnToggleBase::on_long_press_callback_(PBtnToggleBase::btn_, bitRead(PBtnToggleBase::state_, 5)?HIGH:LOW);
+        if (PBtnToggleBase::on_long_press_callback_ && !state_longpress_triggered_() && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_LONGCLICK_TIME < millis()) {
+            bool noSkip = PBtnToggleBase::on_long_press_callback_(PBtnToggleBase::btn_, state_pressed_on_high_()?HIGH:LOW);
             if (noSkip) {
-                bitClear(PBtnToggleBase::state_, 1);
-                bitSet(PBtnToggleBase::state_, 2);
-                bitClear(PBtnToggleBase::state_, 3);
+                state_press_triggered_(false);
+                state_longpress_triggered_(true);
+                state_release_triggered_(false);
             }
-            bitClear(PBtnToggleBase::state_, 0);
+            state_press_timer_started_(false);
         }
     } else {
-        if (!bitRead(PBtnToggleBase::state_, 3) && !bitRead(PBtnToggleBase::state_, 2)) {
+        if (!state_release_triggered_() && !state_longpress_triggered_()) {
             if (PBtnToggleBase::on_release_callback_) {
-                PBtnToggleBase::on_release_callback_(PBtnToggleBase::btn_, !bitRead(PBtnToggleBase::state_, 5)?HIGH:LOW);
+                PBtnToggleBase::on_release_callback_(PBtnToggleBase::btn_, !state_pressed_on_high_()?HIGH:LOW);
             }
-            bitClear(PBtnToggleBase::state_, 0);
+            state_press_timer_started_(false);
 
-            bitClear(PBtnToggleBase::state_, 1);
-            bitClear(PBtnToggleBase::state_, 2);
-            bitSet(PBtnToggleBase::state_, 3);
+            state_press_triggered_(false);
+            state_longpress_triggered_(false);
+            state_release_triggered_(true);
         }
     }
 }
@@ -96,31 +94,27 @@ void PBtnToggleBase::trigger_events_(bool btn_pressed) {
  * Check button state and trigger events if needed
  */
 void PBtnToggleBase::check() {
-    if (bitRead(PBtnToggleBase::state_, 4)) {
+    if (state_is_running_()) {
         return;
     }
-    bitSet(PBtnToggleBase::state_, 4);
+    state_is_running_(true);
     // get current button state
     bool btn_pressed = this->is_btn_pressed_();
     // has state changed during last check
-    bool btn_state_changed = (bool) btn_pressed != (bool) bitRead(PBtnToggleBase::state_, 6);
+    bool btn_state_changed = btn_pressed != state_was_button_pressed_();
 
-    if (btn_pressed) {
-        bitSet(PBtnToggleBase::state_, 6);
-    } else {
-        bitClear(PBtnToggleBase::state_, 6);
-    }
+    state_was_button_pressed_(btn_pressed);
 
     // trigger event if debounce time is passed
-    if (!btn_state_changed && PBtnToggleBase::timer_ > 0 && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_CLICK_DEBOUNCE_TIME < millis() && bitRead(PBtnToggleBase::state_, 0)) {
+    if (!btn_state_changed && PBtnToggleBase::timer_ > 0 && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_CLICK_DEBOUNCE_TIME < millis() && state_press_timer_started_()) {
         PBtnToggleBase::trigger_events_(btn_pressed);
     }
     // reset timer if state has changed
     if (btn_state_changed) {
         PBtnToggleBase::timer_ = millis();
-        bitSet(PBtnToggleBase::state_, 0);
+        state_press_timer_started_(true);
     }
-    bitClear(PBtnToggleBase::state_, 4);
+    state_is_running_(false);
 }
 
 /**
@@ -128,4 +122,108 @@ void PBtnToggleBase::check() {
  */
 int PBtnToggleBase::getPin() {
     return this->btn_;
+}
+
+
+
+
+/**
+ * Check if initial
+ */
+bool PBtnToggleBase::state_press_timer_started_() {
+    return bitRead(PBtnToggleBase::state_, 0) == 1;
+}
+/**
+ * Set current running state
+ */
+void PBtnToggleBase::state_press_timer_started_(bool set) {
+    state_set_state_(set, 0);
+}
+
+/**
+ * Check if press event triggered
+ */
+bool PBtnToggleBase::state_press_triggered_() {
+    return bitRead(PBtnToggleBase::state_, 1) == 1;
+}
+/**
+ * Set press event trigger status
+ */
+void PBtnToggleBase::state_press_triggered_(bool set) {
+    state_set_state_(set, 1);
+}
+/**
+ * Check if long press event triggered
+ */
+bool PBtnToggleBase::state_longpress_triggered_() {
+    return bitRead(PBtnToggleBase::state_, 2) == 1;
+}
+/**
+ * Set long press event trigger status
+ */
+void PBtnToggleBase::state_longpress_triggered_(bool set) {
+    state_set_state_(set, 2);
+}
+/**
+ * Check if release event triggered
+ */
+bool PBtnToggleBase::state_release_triggered_() {
+    return bitRead(PBtnToggleBase::state_, 3) == 1;
+}
+/**
+ * Set release event trigger status
+ */
+void PBtnToggleBase::state_release_triggered_(bool set) {
+    state_set_state_(set, 3);
+}
+
+/**
+ * Check if button check() is currently running
+ */
+bool PBtnToggleBase::state_is_running_() {
+    return bitRead(PBtnToggleBase::state_, 4) == 1;
+}
+/**
+ * Set current running state
+ */
+void PBtnToggleBase::state_is_running_(bool set) {
+    state_set_state_(set, 4);
+}
+
+/**
+ * Get pin state on button press
+ */
+bool PBtnToggleBase::state_pressed_on_high_() {
+    return bitRead(PBtnToggleBase::state_, 5) == 1;
+}
+/**
+ * Set pin state in button press
+ */
+void PBtnToggleBase::state_pressed_on_high_(bool set) {
+    state_set_state_(set, 5);
+}
+
+/**
+ * Get button pressed status on last check
+ */
+bool PBtnToggleBase::state_was_button_pressed_() {
+    return bitRead(PBtnToggleBase::state_, 6) == 1;
+}
+/**
+ * Set button pressed status for next check
+ * Used to detect if button pressed status is changed
+ */
+void PBtnToggleBase::state_was_button_pressed_(bool set) {
+    state_set_state_(set, 6);
+}
+
+/**
+ * Common method for setting state bit value
+ */
+void PBtnToggleBase::state_set_state_(bool set, int bit) {
+    if (set) {
+        bitSet(PBtnToggleBase::state_, bit);
+    } else {
+        bitClear(PBtnToggleBase::state_, bit);
+    }
 }

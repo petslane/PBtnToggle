@@ -8,5 +8,5 @@ PBtnToggle::PBtnToggle(int btn_pin, int pressed_state): PBtnToggleBase(btn_pin, 
  * Read button state and return true if button is pressed down.
  */
 bool PBtnToggle::is_btn_pressed_() {
-    return (digitalRead(PBtnToggle::btn_) == HIGH) == (bitRead(PBtnToggle::state_, 5) == 1);
+    return (digitalRead(PBtnToggle::btn_) == HIGH) == state_pressed_on_high_();
 }
