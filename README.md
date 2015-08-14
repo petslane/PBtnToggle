@@ -1,11 +1,11 @@
 # PBtnToggle
-Arduino library for handling push buttons. Supports push buttons wired to Arduino digital pib or thru PISO (parallel-in/serial out) chip like 74HC165.
+Arduino library for handling push buttons. Supports push buttons wired to Arduino digital pin or thru PISO (parallel-in/serial out) chip like 74HC165.
 
 ## Description
 Arduino library for handling push buttons. Supports push buttons wired to Arduino digital pin or thru PISO (parallel-in/serial out) chip like 74HC165 with support to daisy chain multiple chips. Automatic handling of debounsing. Buttons have push event, long push event and release event.
 
 ## Documentation
-[doc/html/annotated.html](http://petslane.github.io/PBtnToggle/annotated.html)
+[documentation](http://petslane.github.io/PBtnToggle/annotated.html)
 
 ## Demo
 https://www.youtube.com/watch?v=McYEGBtuxOA
