@@ -23,6 +23,7 @@ PBtnToggleBase::PBtnToggleBase(int btn_pin, int pressed_state) {
     PBtnToggleBase::on_press_callback_ = NULL;
     PBtnToggleBase::on_long_press_callback_ = NULL;
     PBtnToggleBase::on_release_callback_ = NULL;
+    PBtnToggleBase::timer_ = millis();
 }
 
 /**
@@ -77,7 +78,13 @@ void PBtnToggleBase::trigger_events_(bool btn_pressed) {
             state_press_timer_started_(false);
         }
     } else {
-        if (!state_release_triggered_() && !state_longpress_triggered_()) {
+        // if no press or longpress triggered before, then stop timer
+        if (!state_press_triggered_() && !state_longpress_triggered_()) {
+            state_press_timer_started_(false);
+            return;
+        }
+        // trigger release
+        if (!state_release_triggered_() && !state_longpress_triggered_() && state_press_triggered_()) {
             if (PBtnToggleBase::on_release_callback_) {
                 PBtnToggleBase::on_release_callback_(PBtnToggleBase::btn_, !state_pressed_on_high_()?HIGH:LOW);
             }
@@ -98,17 +105,19 @@ void PBtnToggleBase::check() {
         return;
     }
     state_is_running_(true);
+
     // get current button state
     bool btn_pressed = this->is_btn_pressed_();
+
     // has state changed during last check
     bool btn_state_changed = btn_pressed != state_was_button_pressed_();
-
     state_was_button_pressed_(btn_pressed);
 
     // trigger event if debounce time is passed
-    if (!btn_state_changed && PBtnToggleBase::timer_ > 0 && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_CLICK_DEBOUNCE_TIME < millis() && state_press_timer_started_()) {
+    if (!btn_state_changed && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_CLICK_DEBOUNCE_TIME < millis() && state_press_timer_started_()) {
         PBtnToggleBase::trigger_events_(btn_pressed);
     }
+
     // reset timer if state has changed
     if (btn_state_changed) {
         PBtnToggleBase::timer_ = millis();
