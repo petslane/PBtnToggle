@@ -5,7 +5,7 @@ Arduino library for handling push buttons. Supports push buttons wired to Arduin
 Arduino library for handling push buttons. Supports push buttons wired to Arduino digital pin or thru PISO (parallel-in/serial out) chip like 74HC165 with support to daisy chain multiple chips. Automatic handling of debounsing. Buttons have push event, long push event and release event.
 
 ## Documentation
-https://htmlpreview.github.io/?https://raw.githubusercontent.com/petslane/PBtnToggle/master/doc/html/annotated.html
+[doc/html/annotated.html](https://htmlpreview.github.io/?https://raw.githubusercontent.com/petslane/PBtnToggle/master/doc/html/annotated.html)
 
 ## Demo
 https://www.youtube.com/watch?v=McYEGBtuxOA
