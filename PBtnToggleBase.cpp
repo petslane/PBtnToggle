@@ -55,10 +55,13 @@ void PBtnToggleBase::onRelease(ToggleFunc callback) {
 
 void PBtnToggleBase::trigger_events_(bool btn_pressed) {
     if (btn_pressed) {
+        // button pressed, trigger press event if not triggered already
         if (!state_press_triggered_()) {
+            // if last event was long press, then do not trigger this press event
             if (!state_longpress_triggered_() && PBtnToggleBase::on_press_callback_) {
                 PBtnToggleBase::on_press_callback_(PBtnToggleBase::btn_, state_pressed_on_high_()?HIGH:LOW);
             }
+            // if no long press event callback set, then stop press timer
             if (!PBtnToggleBase::on_long_press_callback_) {
                 state_press_timer_started_(false);
             }
@@ -68,8 +71,10 @@ void PBtnToggleBase::trigger_events_(bool btn_pressed) {
             state_release_triggered_(false);
             PBtnToggleBase::timer_ = millis();
         }
+        // longpress event callback set but not triggered, button press period reached long press state
         if (PBtnToggleBase::on_long_press_callback_ && !state_longpress_triggered_() && PBtnToggleBase::timer_ + PBTNTOGGLEBASE_LONGCLICK_TIME < millis()) {
             bool noSkip = PBtnToggleBase::on_long_press_callback_(PBtnToggleBase::btn_, state_pressed_on_high_()?HIGH:LOW);
+            // if long press callback returns true, then set longpress event status as triggered, this will make button release not to trigger release event
             if (noSkip) {
                 state_press_triggered_(false);
                 state_longpress_triggered_(true);
