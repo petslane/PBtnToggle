@@ -27,7 +27,7 @@ PBtnToggleBase::PBtnToggleBase(int btn_pin, int pressed_state) {
 }
 
 /**
- * Set callback function for on button press event
+ * Set optional callback function to be called on button press event
  *
  * @param callback Callback function pointer
  */
@@ -36,7 +36,7 @@ void PBtnToggleBase::onPress(ToggleFunc callback) {
 }
 
 /**
- * Set callback function for on long button press event
+ * Set optional callback function to be called on button long press event
  *
  * @param callback Callback function pointer
  */
@@ -45,7 +45,7 @@ void PBtnToggleBase::onLongPress(LongPressFunc callback) {
 }
 
 /**
- * Set callback function for on button release event
+ * Set optional callback function to be called on button release event
  *
  * @param callback Callback function pointer
  */
@@ -103,7 +103,7 @@ void PBtnToggleBase::trigger_events_(bool btn_pressed) {
 }
 
 /**
- * Check button state and trigger events if needed
+ * Check button state and trigger event callback functions. This method must be called in loop()
  */
 void PBtnToggleBase::check() {
     if (state_is_running_()) {

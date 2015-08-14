@@ -21,6 +21,8 @@ typedef void (*ToggleFunc)(int btn, int state);
  */
 typedef bool (*LongPressFunc)(int btn, int state);
 
+/// Abstract base button class
+
 class PBtnToggleBase {
     friend class PBtnToggle;
     public:

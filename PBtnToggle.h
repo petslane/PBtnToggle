@@ -4,6 +4,9 @@
 #include "Arduino.h"
 #include "PBtnToggleBase.h"
 
+/** Single button connected directly to pin.
+ * This is the simplest way to handle buttons. Wire push button to any digital pin with pull-up or pull-down resistor.
+ */
 class PBtnToggle : public PBtnToggleBase {
     public:
         PBtnToggle(int btn_pin, int pressed_state=HIGH);
