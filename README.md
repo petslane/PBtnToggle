@@ -32,3 +32,6 @@ void loop() {
 ## Examples
 Example using one button connected to Arduino digital pin: [examples/one_button/one_button.ino](https://github.com/petslane/PBtnToggle/blob/master/examples/one_button/one_button.ino)<br />
 Example using two daisy chained PISO chips 74HC165: [examples/piso_buttons/piso_buttons.ino](https://github.com/petslane/PBtnToggle/blob/master/examples/piso_buttons/piso_buttons.ino)
+
+## Daisy chain 74HC165
+![](http://petslane.github.io/PBtnToggle/74HC165%20daisy%20chain.png)
